@@ -31,9 +31,27 @@
 .main-card-container {
   display: flex;
   flex-direction: column;
+  background-color: #24232C;
+    width: 540px;
+  height: 528px;
+  flex-shrink: 0;
+  align-items: flex-start;
+  padding: 32px;
 }
-
 
 .main-card-item {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+.password-card {
+  width: 540px;
+  height: 80px;
+  padding-left: 32px;
+  padding-right: 32px;
+  margin-bottom: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  background-color: #24232C;
 }
