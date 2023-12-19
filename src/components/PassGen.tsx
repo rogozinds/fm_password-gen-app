@@ -4,17 +4,19 @@ import generator from 'generate-password-ts/dist/generate-password.bundle.js';
 import {
     Button,
     Checkbox,
-    createSvgIcon,
     createTheme,
-    FormControlLabel, IconButton, makeStyles, Slider, Stack, styled,
-    SvgIcon,
+    FormControlLabel,
+    IconButton,
+    Slider,
+    Stack,
+    styled,
     ThemeProvider,
     Typography
 } from "@mui/material";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import '../App.css';
-import BatterWidget from "./BatterWidget.tsx";
+import BatteryWidget from "./BatteryWidget.tsx";
 import {ALMOST_WHITE} from "./constants.ts";
 
 declare module '@mui/material/styles' {
@@ -52,15 +54,6 @@ const theme = createTheme({
     typography: {
         fontFamily: [
             'JetBrains Mono',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
         ].join(','),
     },
     palette: {
@@ -174,17 +167,22 @@ const calcStrength = (pass: string): number => {
   else  return 4
 }
 export const PassGen = () => {
+    const emptyPassword = "P4$5W0rD!";
     const [password, setPassword] = useState<string>("");
     const [charLength, setCharLength] = useState<number>(10);
 
     const [uppercase, setUppercase] = useState<boolean>(true);
     const [lowercase, setLowercase] = useState<boolean>(true);
-    const [numbers, setNumbers] = useState<boolean>(true);
-    const [symbols, setSymbols] = useState<boolean>(false);
+    const [numbers, setNumbers] = useState<boolean>(false);
+    const [symbols, setSymbols] = useState<boolean>(true);
     const [strength, setStrength] = useState<number>(0);
     const [isCopied, setIsCopied] = useState(false);
 
     const generatePassword = useCallback(() => {
+        if(charLength===0){
+            setPassword(emptyPassword);
+            return;
+        }
         const options = {};
         options.uppercase = uppercase;
         options.lowercase = lowercase;
@@ -202,9 +200,6 @@ export const PassGen = () => {
     }, [charLength, uppercase, lowercase, numbers, symbols]);
     useEffect(()=>{
         setStrength(calcStrength(password));
-        console.log("!!! passwordk", password);
-
-        console.log("!!! strength", strength);
     }, [password]);
     useEffect(() => {
         generatePassword();
@@ -224,13 +219,11 @@ export const PassGen = () => {
             }, 2000);
         }
     }, [isCopied]);
-    const strengthUI = useMemo(() => {
-        return STRENGTH_STRINGS[strength];
-    }, [strength])
+
     return (
         <ThemeProvider theme={theme}>
             <div className="layout">
-                <Typography color="#817D92" fontSize="24px" sx={{marginBottom: "32px"}}>
+                <Typography color="#817D92" fontSize="24px" sx={{marginBottom: "24px"}} lineHeight="32px">
                     Password Generator
                 </Typography>
                 <div className="password-card main-card-item">
@@ -264,7 +257,7 @@ export const PassGen = () => {
                         defaultValue={charLength}
                         valueLabelDisplay="auto"
                         step={1}
-                        min={5}
+                        min={0}
                         max={20}
                         onChange={
                             (event: Event, newValue: number | number[]) => {
@@ -296,9 +289,7 @@ export const PassGen = () => {
                             setSymbols(event.target.checked);
                         }}/>
                     } label="Include Symbols"/>
-                    <div>
-                        <BatterWidget strength={strength}></BatterWidget>
-                    </div>
+                    <BatteryWidget strength={strength}></BatteryWidget>
 
                     <Button onClick={generatePassword}
                             endIcon={<ArrowForwardIcon/>}

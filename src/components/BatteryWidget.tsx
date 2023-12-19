@@ -4,8 +4,9 @@ import {Box, Stack, Typography} from "@mui/material";
 import {ALMOST_WHITE, GRAY, VERY_DARK} from "./constants.ts";
 
 interface BatteryWidgetProps {
-  strength: number;
+    strength: number;
 }
+
 const Battery = styled.div`
   display: flex;
   margin-left: 20px;
@@ -14,7 +15,7 @@ const Battery = styled.div`
 const Rectangle = styled.div<{ filled: boolean; color: string }>`
   box-sizing: border-box;
   width: 10px;
-  height: 28px; 
+  height: 28px;
   margin: 4px;
   border-width: ${(props) => (props.filled ? "0px" : '2px')};
   border-style: solid;
@@ -22,19 +23,25 @@ const Rectangle = styled.div<{ filled: boolean; color: string }>`
   background-color: ${(props) => (props.filled ? props.color : 'transparent')};
 `;
 
-const BatteryWidget: React.FC<BatteryWidgetProps> = ({ strength }) => {
-    const value = Math.max(Math.min(4, strength),1);
+const BatteryWidget: React.FC<BatteryWidgetProps> = ({strength}) => {
+    const value = Math.max(Math.min(4, strength), 1);
     const levels = [
-        { label: 'too weak!', color: '#F64A4A' },
-        { label: 'weak', color: '#FB7C58' },
-        { label: 'medium', color: '#F8CD65' },
-        { label: 'strong', color: '#A4FFAF' }
+        {label: 'too weak!', color: '#F64A4A'},
+        {label: 'weak', color: '#FB7C58'},
+        {label: 'medium', color: '#F8CD65'},
+        {label: 'strong', color: '#A4FFAF'}
     ];
-    const text = levels[value-1].label;
-    const color = levels[value-1].color;
+    const text = levels[value - 1].label;
+    const color = levels[value - 1].color;
     return (
-        <Box color={VERY_DARK} width="476px" height="72px">
-            <Stack direction="row" alignItems="center" justifyContent="space-between">
+        <Box sx={{width: "100%", paddingTop:"16px", paddingBottom:"32px"}}>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" color={VERY_DARK}
+                   sx={{
+                       width: "100%", height: "72px", backgroundColor: VERY_DARK,
+                       padding:"32px",
+                       boxSizing: "border-box",
+                   }}>
+
                 <Typography text-align="right" textTransform="uppercase" color={GRAY} fontSize="18px">
                     strength
                 </Typography>
