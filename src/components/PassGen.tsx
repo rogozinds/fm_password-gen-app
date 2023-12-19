@@ -6,7 +6,7 @@ import {
     Checkbox,
     createSvgIcon,
     createTheme,
-    FormControlLabel, IconButton, makeStyles, Slider, styled,
+    FormControlLabel, IconButton, makeStyles, Slider, Stack, styled,
     SvgIcon,
     ThemeProvider,
     Typography
@@ -14,6 +14,8 @@ import {
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import '../App.css';
+import BatterWidget from "./BatterWidget.tsx";
+import {ALMOST_WHITE} from "./constants.ts";
 
 declare module '@mui/material/styles' {
     interface Theme {
@@ -46,7 +48,6 @@ declare module '@mui/material/styles' {
         }
     }
 }
-const ALMOST_WHITE = "#E6E5EA";
 const theme = createTheme({
     typography: {
         fontFamily: [
@@ -110,29 +111,29 @@ const theme = createTheme({
 
 //Custom styles can be done also via styled
 const CustomSlider = styled(Slider)({
-  '& .MuiSlider-thumb': {
-    height: 24,
-    width: 24,
-    backgroundColor: ALMOST_WHITE,
-    '&:focus, &:hover, &.Mui-active': {
-      boxShadow: 'inherit',
-    },
-      '&:hover': {
-      border: '2px solid',
+    '& .MuiSlider-thumb': {
+        height: 24,
+        width: 24,
+        backgroundColor: ALMOST_WHITE,
+        '&:focus, &:hover, &.Mui-active': {
+            boxShadow: 'inherit',
+        },
+        '&:hover': {
+            border: '2px solid',
 
-          backgroundColor: "#18171F"
+            backgroundColor: "#18171F"
+        },
     },
-  },
 
-  '& .MuiSlider-track': {
-    height: 8,
-    borderRadius: 0,
-  },
-  '& .MuiSlider-rail': {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: "#18171F"
-  },
+    '& .MuiSlider-track': {
+        height: 8,
+        borderRadius: 0,
+    },
+    '& .MuiSlider-rail': {
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: "#18171F"
+    },
 });
 // const useStyles = makeStyles(theme => ({
 //   customButton: {
@@ -153,11 +154,24 @@ const STRENGTH_STRINGS = [
     "Medium",
     "Strong"
 ]
-// const RightArrow = createSvgIcon(
-//     <svg width="12" height="12" xmlns="http://www.w3.org/2000/svg"><path fill="#24232C" d="m5.106 12 6-6-6-6-1.265 1.265 3.841 3.84H.001v1.79h7.681l-3.841 3.84z"/></svg>
-// );
 const calcStrength = (pass: string): number => {
+  if (pass.length < 8) return 1;
 
+  let _strength = pass.length;
+
+  // Check for capital letters
+  if (/[A-Z]/.test(pass)) _strength += 2;
+
+  // Check for numbers
+  if (/\d/.test(pass)) _strength += 3;
+
+  // Check for non-alphanumeric symbols
+  if (/\W/.test(pass)) _strength += 4;
+
+  // Calculate final score
+  if (_strength >= 8 && _strength < 13) return 2;
+  else if (_strength < 16) return 3;
+  else  return 4
 }
 export const PassGen = () => {
     const [password, setPassword] = useState<string>("");
@@ -168,6 +182,7 @@ export const PassGen = () => {
     const [numbers, setNumbers] = useState<boolean>(true);
     const [symbols, setSymbols] = useState<boolean>(false);
     const [strength, setStrength] = useState<number>(0);
+    const [isCopied, setIsCopied] = useState(false);
 
     const generatePassword = useCallback(() => {
         const options = {};
@@ -176,7 +191,7 @@ export const PassGen = () => {
         options.numbers = numbers;
         options.symbols = symbols;
         //If all of the checkobxes are deselect
-        if(!uppercase && !lowercase && !numbers && !symbols) {
+        if (!uppercase && !lowercase && !numbers && !symbols) {
             options.lowercase = true;
         }
         const p = generator.generate({
@@ -185,12 +200,30 @@ export const PassGen = () => {
         });
         setPassword(p);
     }, [charLength, uppercase, lowercase, numbers, symbols]);
+    useEffect(()=>{
+        setStrength(calcStrength(password));
+        console.log("!!! passwordk", password);
+
+        console.log("!!! strength", strength);
+    }, [password]);
     useEffect(() => {
         generatePassword();
     }, []);
-    const copyToClipboard = () => {
-        console.log("Password is copied to clipboard");
-    }
+    const copyToClipboard = async () => {
+        try {
+            setIsCopied(true);
+            await navigator.clipboard.writeText(password);
+        } catch (err) {
+            console.error('Failed to copy: ', err);
+        }
+    };
+    useEffect(() => {
+        if (isCopied) {
+            setTimeout(() => {
+                setIsCopied(false);
+            }, 2000);
+        }
+    }, [isCopied]);
     const strengthUI = useMemo(() => {
         return STRENGTH_STRINGS[strength];
     }, [strength])
@@ -204,9 +237,18 @@ export const PassGen = () => {
                     <Typography color={ALMOST_WHITE} fontSize="32px">
                         {password}
                     </Typography>
-                    <IconButton color="secondary">
-                        <ContentCopyIcon/>
-                    </IconButton>
+
+                    <Stack direction="row" alignItems="center">
+                        {isCopied &&
+                            <Typography className="fade-out" textTransform="uppercase" color="secondary"
+                                        fontSize="18px">
+                                copied
+                            </Typography>
+                        }
+                        <IconButton color="secondary" onClick={copyToClipboard}>
+                            <ContentCopyIcon/>
+                        </IconButton>
+                    </Stack>
                 </div>
                 <div className="main-card-container">
                     <div className="main-card-item">
@@ -251,12 +293,11 @@ export const PassGen = () => {
 
                     <FormControlLabel control={
                         <Checkbox color="secondary" checked={symbols} onChange={(event) => {
-                            console.log("SYMBOLS ARE SET TO", event.target.checked);
                             setSymbols(event.target.checked);
                         }}/>
                     } label="Include Symbols"/>
                     <div>
-                        {strengthUI}
+                        <BatterWidget strength={strength}></BatterWidget>
                     </div>
 
                     <Button onClick={generatePassword}

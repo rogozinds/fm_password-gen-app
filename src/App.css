@@ -55,3 +55,17 @@
   align-items: center;
   background-color: #24232C;
 }
+.fade-out {
+  opacity: 1;
+  transition: opacity 2s ease-out;
+  animation: fadeOut 2s;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
