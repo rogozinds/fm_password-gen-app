@@ -1,6 +1,6 @@
-import React, {useCallback, useEffect, useMemo, useState} from "react";
-//TODO Check can we import it 'properly'
-import generator from 'generate-password-ts/dist/generate-password.bundle.js';
+import { useCallback, useEffect, useState } from "react";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import {
     Button,
     Checkbox,
@@ -13,11 +13,12 @@ import {
     ThemeProvider,
     Typography
 } from "@mui/material";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+//@ts-ignore
+import generator from 'generate-password-ts/dist/generate-password.bundle.js';
+import type {Options} from 'generate-password-ts/dist/Options';
 import '../App.css';
 import BatteryWidget from "./BatteryWidget.tsx";
-import {ALMOST_WHITE} from "./constants.ts";
+import { ALMOST_WHITE } from "./constants.ts";
 
 declare module '@mui/material/styles' {
     interface Theme {
@@ -25,22 +26,10 @@ declare module '@mui/material/styles' {
             primary: string;
             secondary: string;
         },
-        // overrides: {
-        //     MuiFormControlLabel: {
-        //         label: {
-        //             color: "string"
-        //         },
-        //     },
-        // }
-    };
+    }
 
     // allow configuration using `createTheme`
     interface ThemeOptions {
-        palette?: {
-            primary?: string;
-            secondary?: string;
-        },
-
         overrides?: {
             MuiFormControlLabel?: {
                 label?: {
@@ -73,10 +62,16 @@ const theme = createTheme({
                         backgroundColor: 'transparent',
                         color: "#A4FFAF",
                         border: "2px #A4FFAF solid",
-
+                        fontSize: "18px",
+                        fontWeight: 700,
+                        fontStyle: "normal",
+                        textTransform: "uppercase",
                         // Disable the ripple effect
                         "& .MuiTouchRipple-root": {
                             display: 'none',
+                        },
+                        '@media (max-width: 600px)': { // 600px is a common breakpoint for mobile devices
+                            fontSize: '16px',
                         },
                     },
                 }
@@ -85,7 +80,11 @@ const theme = createTheme({
         MuiCheckbox: {
             styleOverrides: {
                 root: {
-                    color: ALMOST_WHITE
+                    color: ALMOST_WHITE,
+                    fontSize: "24px",
+                    '@media (max-width: 600px)': {
+                        fontSize: '16px',
+                    },
                 }
             }
         },
@@ -95,7 +94,10 @@ const theme = createTheme({
                     color: ALMOST_WHITE,
                     fontSize: "18px",
                     fontStyle: "normal",
-                    fontWeight: 700
+                    fontWeight: 700,
+                    '@media (max-width: 600px)': {
+                        fontSize: '16px',
+                    },
                 }
             }
         }
@@ -105,8 +107,8 @@ const theme = createTheme({
 //Custom styles can be done also via styled
 const CustomSlider = styled(Slider)({
     '& .MuiSlider-thumb': {
-        height: 24,
-        width: 24,
+        height: 28,
+        width: 28,
         backgroundColor: ALMOST_WHITE,
         '&:focus, &:hover, &.Mui-active': {
             boxShadow: 'inherit',
@@ -128,25 +130,7 @@ const CustomSlider = styled(Slider)({
         backgroundColor: "#18171F"
     },
 });
-// const useStyles = makeStyles(theme => ({
-//   customButton: {
-//     '&:hover': {
-//       backgroundColor: 'transparent',
-//       // Disable the ripple effect
-//       "& .MuiTouchRipple-root": {
-//         display: 'none',
-//       },
-//     },
-//   },
-// }));
-//Strength:
-// 0 - too weak,
-const STRENGTH_STRINGS = [
-    "Too weak!",
-    "Weak",
-    "Medium",
-    "Strong"
-]
+
 const calcStrength = (pass: string): number => {
   if (pass.length < 8) return 1;
 
@@ -166,8 +150,8 @@ const calcStrength = (pass: string): number => {
   else if (_strength < 16) return 3;
   else  return 4
 }
+
 export const PassGen = () => {
-    const emptyPassword = "P4$5W0rD!";
     const [password, setPassword] = useState<string>("");
     const [charLength, setCharLength] = useState<number>(10);
 
@@ -179,11 +163,7 @@ export const PassGen = () => {
     const [isCopied, setIsCopied] = useState(false);
 
     const generatePassword = useCallback(() => {
-        if(charLength===0){
-            setPassword(emptyPassword);
-            return;
-        }
-        const options = {};
+        const options = {} as Options;
         options.uppercase = uppercase;
         options.lowercase = lowercase;
         options.numbers = numbers;
@@ -222,8 +202,8 @@ export const PassGen = () => {
 
     return (
         <ThemeProvider theme={theme}>
-            <div className="layout">
-                <Typography color="#817D92" fontSize="24px" sx={{marginBottom: "24px"}} lineHeight="32px">
+            <div className="main">
+                <Typography color="#817D92" fontSize="24px" >
                     Password Generator
                 </Typography>
                 <div className="password-card main-card-item">
@@ -260,7 +240,7 @@ export const PassGen = () => {
                         min={0}
                         max={20}
                         onChange={
-                            (event: Event, newValue: number | number[]) => {
+                            (_: Event, newValue: number | number[]) => {
                                 setCharLength(newValue as number);
                             }
                         }
@@ -298,11 +278,6 @@ export const PassGen = () => {
                             sx={{
                                 width: "100%",
                                 height: "65px",
-                                flexShrink: 0,
-                                fontSize: "18px",
-                                fontWeight: 700,
-                                fontStyle: "normal",
-                                textTransform: "uppercase",
                             }}
                     >
                         Generate

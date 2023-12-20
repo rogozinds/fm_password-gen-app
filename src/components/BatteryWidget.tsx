@@ -9,7 +9,7 @@ interface BatteryWidgetProps {
 
 const Battery = styled.div`
   display: flex;
-  margin-left: 20px;
+  //margin-left: 20px;
 `;
 
 const Rectangle = styled.div<{ filled: boolean; color: string }>`
@@ -34,23 +34,17 @@ const BatteryWidget: React.FC<BatteryWidgetProps> = ({strength}) => {
     const text = levels[value - 1].label;
     const color = levels[value - 1].color;
     return (
-        <Box sx={{width: "100%", paddingTop:"16px", paddingBottom:"32px"}}>
-            <Stack direction="row" alignItems="center" justifyContent="space-between" color={VERY_DARK}
-                   sx={{
-                       width: "100%", height: "72px", backgroundColor: VERY_DARK,
-                       padding:"32px",
-                       boxSizing: "border-box",
-                   }}>
-
-                <Typography text-align="right" textTransform="uppercase" color={GRAY} fontSize="18px">
+        <div className='battery-widget'>
+            <div className='battery-widget-inside'>
+                <Typography variant="subtitle1" text-align="right" textTransform="uppercase" color={GRAY} >
                     strength
                 </Typography>
                 <Stack direction="row" alignItems="center" justifyContent="center">
-                    <Typography textTransform="uppercase" color={ALMOST_WHITE} fontSize="24px">
+                    <Typography variant="h6" textTransform="uppercase" color={ALMOST_WHITE}>
                         {text}
                     </Typography>
                     <Battery>
-                        {levels.map((level, index) => (
+                        {levels.map((_, index) => (
                             <Rectangle
                                 key={index}
                                 filled={index < value}
@@ -59,8 +53,8 @@ const BatteryWidget: React.FC<BatteryWidgetProps> = ({strength}) => {
                         ))}
                     </Battery>
                 </Stack>
-            </Stack>
-        </Box>
+                </div>
+        </div>
     );
 };
 

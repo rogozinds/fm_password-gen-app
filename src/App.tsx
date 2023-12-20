@@ -4,9 +4,7 @@ import {PassGen} from "./components/PassGen.tsx";
 function App() {
   return (
     <>
-      <div className="card">
-          <PassGen></PassGen>
-      </div>
+      <PassGen></PassGen>
     </>
   )
 }
