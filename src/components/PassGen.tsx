@@ -58,11 +58,14 @@ const theme = createTheme({
         MuiButton: {
             styleOverrides: {
                 root: {
+                    border: "2px transparent solid", 
+                    fontSize: '16px',
                     '&:hover': {
                         backgroundColor: 'transparent',
                         color: "#A4FFAF",
+
                         border: "2px #A4FFAF solid",
-                        fontSize: "18px",
+                        fontSize: "16px",
                         fontWeight: 700,
                         fontStyle: "normal",
                         textTransform: "uppercase",
@@ -131,6 +134,15 @@ const CustomSlider = styled(Slider)({
     },
 });
 
+const CustomTypography = styled(Typography)(({ theme }) => ({
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  fontSize: "28px",
+  color: "#E6E5EA",
+  [theme.breakpoints.down('sm')]: {
+        fontSize: '20px',
+  },
+}));
 const calcStrength = (pass: string): number => {
   if (pass.length < 8) return 1;
 
@@ -207,9 +219,9 @@ export const PassGen = () => {
                     Password Generator
                 </Typography>
                 <div className="password-card main-card-item">
-                    <Typography color={ALMOST_WHITE} fontSize="32px">
+                    <CustomTypography>
                         {password}
-                    </Typography>
+                    </CustomTypography>
 
                     <Stack direction="row" alignItems="center">
                         {isCopied &&
